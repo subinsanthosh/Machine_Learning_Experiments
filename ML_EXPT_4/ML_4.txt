@@ -1,25 +1,141 @@
-#EXPERIMENT NO 4:
-#Adult Census Income 
-#Random Forest Classifier
+Experiment No:- 4
 
+Aim:- Apply Random Forest Algorithm on Adult Census income dataset and analyze the performance of the model.
 
+Code:-
 
-dataset = pd.read_csv('adult.csv')
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 import seaborn as sns
+# Importing dataset
+dataset = pd.read_csv('adult.csv')
 dataset.head()
+
+
+age	workClass	fnlwgt	education	education-num	marital-status	occupation	relationship	race	sex	capital-gain	capital-loss	hours-per-week	native-country	income
+0	39	State-gov	77516	Bachelors	13	Never-married	Adm-clerical	Not-in-family	White	Male	2174	0	40	United-States	<=50K
+1	50	Self-emp-not-inc	83311	Bachelors	13	Married-civ-spouse	Exec-managerial	Husband	White	Male	0	0	13	United-States	<=50K
+2	38	Private	215646	HS-grad	9	Divorced	Handlers-cleaners	Not-in-family	White	Male	0	0	40	United-States	<=50K
+3	53	Private	234721	11th	7	Married-civ-spouse	Handlers-cleaners	Husband	Black	Male	0	0	40	United-States	<=50K
+4	28	Private	338409	Bachelors	13	Married-civ-spouse	Prof-specialty	Wife	Black	Female	0	0	40	Cuba	<=50K
 print('Rows: {} Columns: {}'.format(dataset.shape[0], dataset.shape[1]))
+
+Rows: 32561 Columns: 15
+
+
 dataset.info()
+
+ #   Column          Non-Null Count  Dtype 
+---  ------          --------------  ----- 
+ 0   age             32561 non-null  int64 
+ 1   workClass       32561 non-null  object
+ 2   fnlwgt          32561 non-null  int64 
+ 3   education       32561 non-null  object
+ 4   education-num   32561 non-null  int64 
+ 5   marital-status  32561 non-null  object
+ 6   occupation      32561 non-null  object
+ 7   relationship    32561 non-null  object
+ 8   race            32561 non-null  object
+ 9   sex             32561 non-null  object
+ 10  capital-gain    32561 non-null  int64 
+ 11  capital-loss    32561 non-null  int64 
+ 12  hours-per-week  32561 non-null  int64 
+ 13  native-country  32561 non-null  object
+ 14  income          32561 non-null  object
+dtypes: int64(6), object(9)
+
 dataset.describe().T
+
+count	mean	std	min	25%	50%	75%	max
+age	32561.0	38.581647	13.640433	17.0	28.0	37.0	48.0	90.0
+fnlwgt	32561.0	189778.366512	105549.977697	12285.0	117827.0	178356.0	237051.0	1484705.0
+education-num	32561.0	10.080679	2.572720	1.0	9.0	10.0	12.0	16.0
+capital-gain	32561.0	1077.648844	7385.292085	0.0	0.0	0.0	0.0	99999.0
+capital-loss	32561.0	87.303830	402.960219	0.0	0.0	0.0	0.0	4356.0
+hours-per-week	32561.0	40.437456	12.347429	1.0	40.0	40.0	45.0	99.0
 round((dataset.isnull().sum() / dataset.shape[0]) * 100, 2).astype(str) + ' %'
+age               0.0 %
+workClass         0.0 %
+fnlwgt            0.0 %
+education         0.0 %
+education-num     0.0 %
+marital-status    0.0 %
+occupation        0.0 %
+relationship      0.0 %
+race              0.0 %
+sex               0.0 %
+capital-gain      0.0 %
+capital-loss      0.0 %
+hours-per-week    0.0 %
+native-country    0.0 %
+income            0.0 %
+
+dtype: object
 round((dataset.isin(['?']).sum() / dataset.shape[0]) * 100, 2).astype(str) + ' %'
+age                0.0 %
+workClass         5.64 %
+fnlwgt             0.0 %
+education          0.0 %
+education-num      0.0 %
+marital-status     0.0 %
+occupation        5.66 %
+relationship       0.0 %
+race               0.0 %
+sex                0.0 %
+capital-gain       0.0 %
+capital-loss       0.0 %
+hours-per-week     0.0 %
+native-country    1.79 %
+income             0.0 %
+dtype: object
+
+round((dataset.isin(['?']).sum() / dataset.shape[0]) * 100, 2).astype(str) + ' %'
+age                0.0 %
+workClass         5.64 %
+fnlwgt             0.0 %
+education          0.0 %
+education-num      0.0 %
+marital-status     0.0 %
+occupation        5.66 %
+relationship       0.0 %
+race               0.0 %
+sex                0.0 %
+capital-gain       0.0 %
+capital-loss       0.0 %
+hours-per-week     0.0 %
+native-country    1.79 %
+income             0.0 %
+dtype: object
+
 income = dataset['income'].value_counts(normalize=True)
 round(income * 100, 2).astype('str') + ' %'
+<=50K    75.92 %
+>50K     24.08 %
+Name: income, dtype: object
+
 dataset = dataset.replace('?', np.nan)
+# Checking null values
 round((dataset.isnull().sum() / dataset.shape[0]) * 100, 2).astype(str) + ' %'
-columns_with_nan = ['workclass', 'occupation', 'native-country']
+
+age                0.0 %
+workClass         5.64 %
+fnlwgt             0.0 %
+education          0.0 %
+education-num      0.0 %
+marital-status     0.0 %
+occupation        5.66 %
+relationship       0.0 %
+race               0.0 %
+sex                0.0 %
+capital-gain       0.0 %
+capital-loss       0.0 %
+hours-per-week     0.0 %
+native-country    1.79 %
+income             0.0 %
+dtype: object
+
+columns_with_nan = ['workClass', 'occupation', 'native-country']
 for col in columns_with_nan:
     dataset[col].fillna(dataset[col].mode()[0], inplace = True)
 from sklearn.preprocessing import LabelEncoder
@@ -35,22 +151,54 @@ selector.fit(X, Y)
 feature_imp = selector.feature_importances_
 for index, val in enumerate(feature_imp):
     print(index, round((val * 100), 2))
+
+
+0 15.59
+1 4.13
+2 16.71
+3 3.87
+4 8.66
+5 8.04
+6 7.27
+7 8.62
+8 1.47
+9 2.84
+10 8.83
+11 2.81
+12 9.64
+13 1.53
+
+X = X.drop(['workClass', 'education', 'race', 'sex', 'capital-loss', 'native-country'], axis = 1)
 from sklearn.preprocessing import StandardScaler
 for col in X.columns:     
   scaler = StandardScaler()     
   X[col] = scaler.fit_transform(X[col].values.reshape(-1, 1))
 round(Y.value_counts(normalize=True) * 100, 2).astype('str') + ' %'
+
+0    75.92 %
+1    24.08 %
+Name: income, dtype: object
+
 from imblearn.over_sampling import RandomOverSampler 
 ros = RandomOverSampler(random_state = 42)
 ros.fit(X, Y)
 X_resampled, Y_resampled = ros.fit_resample(X, Y)
 round(Y_resampled.value_counts(normalize=True) * 100, 2).astype('str') + ' %'
+
+0    50.0 %
+1    50.0 %
+Name: income, dtype: object
+
 from sklearn.model_selection import train_test_split
 X_train, X_test, Y_train, Y_test = train_test_split(X_resampled, Y_resampled, test_size = 0.2, random_state = 42)
 print("X_train shape:", X_train.shape) 
 print("X_test shape:", X_test.shape) 
 print("Y_train shape:", Y_train.shape) 
 print("Y_test shape:", Y_test.shape)
+X_train shape: (39552, 8)
+X_test shape: (9888, 8)
+Y_train shape: (39552,)
+Y_test shape: (9888,)
 from sklearn.ensemble import RandomForestClassifier
 ran_for = RandomForestClassifier(random_state = 42)
 ran_for.fit(X_train, Y_train)
@@ -60,6 +208,9 @@ from sklearn.metrics import f1_score
 print('Random Forest Classifier:')
 print('Accuracy score:',round(accuracy_score(Y_test, Y_pred_ran_for) * 100, 2))
 print('F1 score:',round(f1_score(Y_test, Y_pred_ran_for) * 100, 2))
+Random Forest Classifier:
+Accuracy score: 92.44
+F1 score: 92.8
 from sklearn.model_selection import RandomizedSearchCV
 n_estimators = [int(x) for x in np.linspace(start = 40, stop = 150, num = 15)]
 max_depth = [int(x) for x in np.linspace(40, 150, num = 15)]
@@ -71,6 +222,7 @@ rf_tuned = RandomForestClassifier(random_state = 42)
 rf_cv = RandomizedSearchCV(estimator = rf_tuned, param_distributions = param_dist, cv = 5, random_state = 42)
 rf_cv.fit(X_train, Y_train)
 rf_cv.best_score_
+0.912014447709274
 rf_cv.best_params_
 rf_best = RandomForestClassifier(max_depth = 102, n_estimators = 40, random_state = 42)
 rf_best.fit(X_train, Y_train)
@@ -78,7 +230,23 @@ Y_pred_rf_best = rf_best.predict(X_test)
 print('Random Forest Classifier:') 
 print('Accuracy score:',round(accuracy_score(Y_test, Y_pred_rf_best) * 100, 2)) 
 print('F1 score:',round(f1_score(Y_test, Y_pred_rf_best) * 100, 2))
+
+Random Forest Classifier:
+Accuracy score: 92.47
+F1 score: 92.82
+
 from sklearn.metrics import confusion_matrix 
 cm = confusion_matrix(Y_test, Y_pred_rf_best)
 from sklearn.metrics import classification_report
 print(classification_report(Y_test, Y_pred_rf_best))
+
+Output:-
+
+              precision    recall  f1-score   support
+
+           0       0.97      0.88      0.92      4938
+           1       0.89      0.97      0.93      4950
+
+    accuracy                           0.92      9888
+   macro avg       0.93      0.92      0.92      9888
+weighted avg       0.93      0.92      0.92      9888
