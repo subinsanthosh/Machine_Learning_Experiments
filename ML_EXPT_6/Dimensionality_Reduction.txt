@@ -1,0 +1,69 @@
+
+Experiment – 6
+
+Aim :- Dimensionality reduction on adult census income
+
+Code:-
+
+from sklearn import preprocessing
+from sklearn.preprocessing import StandardScaler
+# PCA's components 
+
+std_scale = preprocessing.StandardScaler().fit(my_df.drop('predclass', axis=1))
+X = std_scale.transform(my_df.drop('predclass', axis=1))
+y = my_df['predclass']
+
+# Formatting
+target_names = [0,1]
+colors = ['blue','yellow','pink']
+lw = 2
+alpha = 0.3
+# 2 Components PCA
+plt.style.use('seaborn-whitegrid')
+plt.figure(2, figsize=(20, 8))
+
+plt.subplot(1, 2, 1)
+pca = PCA(n_components=2)
+X_r = pca.fit(X).transform(X)
+for color, i, target_name in zip(colors, [0, 1], target_names):
+    plt.scatter(X_r[y == i, 0], X_r[y == i, 1], 
+                color=color, 
+alpha=alpha, 
+                lw=lw,
+                label=target_name)
+plt.legend(loc='best', shadow=False, scatterpoints=1)
+plt.title('First two PCA directions');
+
+# 3 Components PCA
+ax = plt.subplot(1, 2, 2, projection='3d')
+
+pca = PCA(n_components=3)
+X_reduced = pca.fit(X).transform(X)
+for color, i, target_name in zip(colors, [0, 1], target_names):
+    ax.scatter(X_reduced[y == i, 0], X_reduced[y == i, 1], X_reduced[y == i, 2], 
+               color=color,
+               alpha=alpha,
+               lw=lw, 
+               label=target_name)
+plt.legend(loc='best', shadow=False, scatterpoints=1)
+ax.set_title("First three PCA directions")
+ax.set_xlabel("1st eigenvector")
+ax.set_ylabel("2nd eigenvector")
+ax.set_zlabel("3rd eigenvector")
+
+# rotate the axes
+ax.view_init(30, 10)
+
+sc = StandardScaler()
+X_train_std = sc.fit_transform(X_train)
+pca = PCA(n_components=None)
+x_train_pca = pca.fit_transform(X_train_std)
+a = pca.explained_variance_ratio_
+a_running = a.cumsum()
+a_running
+
+Output :-
+
+array([ 0.21306431, 0.33125071, 0.4180646 , 0.4992456 , 0.57921107,
+       0.65429665, 0.72767437, 0.79970128, 0.86881165, 0.92652272,
+       0.96866435, 0.99829882, 1.9539 ])
